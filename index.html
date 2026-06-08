@@ -509,4 +509,179 @@
       <div class="card"><h3>Key Factors Influencing Uptake</h3><ul><li>Doctor's recommendation (strongest predictor)</li><li>Perceived vaccine effectiveness and risk of illness</li><li>Behavioral habits (hand washing, mask usage)</li><li>Age group, health worker status, insurance</li></ul><p>Evaluation metric: ROC-AUC.</p></div>
     </div><br/>
     <div class="card"><h3>Missing Values Insight</h3><p>30 columns contained missing values. Employment-related features had the highest missing entries; behavioral features fewer missing values.</p></div>
- 
+    <!-- Missing values image -->
+    <div class="graph-image">
+      <img src="missing_values.jpg" alt="Missing values analysis">
+      <div class="graph-caption">Figure 1: Missing values pattern across features</div>
+    </div>
+    <!-- H1N1 distribution -->
+    <div class="graph-image">
+      <img src="h1n1_distribution.jpg" alt="H1N1 vaccine distribution">
+      <div class="graph-caption">Figure 2: Distribution of H1N1 vaccine uptake</div>
+    </div>
+    <!-- Seasonal distribution -->
+    <div class="graph-image">
+      <img src="seasonal_distribution.jpg" alt="Seasonal flu vaccine distribution">
+      <div class="graph-caption">Figure 3: Distribution of seasonal flu vaccine uptake</div>
+    </div>
+    <div class="graph-inference"><strong>Inference:</strong> Target variables are moderately imbalanced; seasonal vaccine has higher uptake. Public health interventions require targeted campaigns to close gaps.</div>
+  </section>
+
+  <!-- Preprocessing section -->
+  <section id="preprocessing" class="section-card">
+    <h2>Preprocessing Steps</h2>
+    <div class="section-sub">Data cleaning, encoding, and handling missingness</div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Missing Value Imputation</h3>
+        <p>Median imputation for numeric columns (health-related behavioral scores). Mode imputation for categorical columns (employment, income bracket).</p>
+      </div>
+      <div class="card">
+        <h3>Encoding & Scaling</h3>
+        <p>Ordinal encoding for ordinal features (e.g., opinion ratings). StandardScaler for numeric features before model training.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Visualization and Analysis Section -->
+  <section id="analysis" class="section-card">
+    <h2>Visualization & Analysis</h2>
+    <div class="section-sub">Relationships, distributions, and feature correlations</div>
+    <!-- gender vaccination plot -->
+    <div class="graph-image">
+      <img src="gender_vaccination.jpg" alt="Gender wise vaccination rates">
+      <div class="graph-caption">Figure 4: Vaccination rate by gender</div>
+    </div>
+    <div class="graph-inference"><strong>Inference:</strong> Minimal gender difference in overall vaccine uptake. Both genders show higher uptake for seasonal vaccine.</div>
+    <!-- age group plot -->
+    <div class="graph-image">
+      <img src="age_group.jpg" alt="Age group vaccine distribution">
+      <div class="graph-caption">Figure 5: Vaccine uptake across age groups</div>
+    </div>
+    <div class="graph-inference"><strong>Inference:</strong> Highest vaccination in older adults (65+). Younger adults (18-34) have lowest uptake — potential target for public health campaigns.</div>
+    <!-- correlation heatmap -->
+    <div class="graph-image">
+      <img src="correlation_heatmap.jpg" alt="Feature correlation heatmap">
+      <div class="graph-caption">Figure 6: Correlation heatmap of features and targets</div>
+    </div>
+    <div class="graph-inference"><strong>Inference:</strong> Strong positive correlation between h1n1_vaccine and seasonal_vaccine (0.42). Doctor recommendation most strongly correlates with both vaccine targets.</div>
+  </section>
+
+  <section id="feature-selection" class="section-card">
+    <h2>Feature Importance & Engineering</h2>
+    <div class="section-sub">Identified key drivers and created composite features</div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Feature Importance</h3>
+        <div class="graph-image">
+          <img src="feature_importance.jpg" alt="Feature importance ranking">
+          <div class="graph-caption">Figure 7: Top features by importance (XGBoost)</div>
+        </div>
+        <p>Top predictors: doctor_recommendation, age_group, health_insurance, opinion_vacc_effective, and behavioral habits.</p>
+      </div>
+      <div class="card">
+        <h3>Feature Engineering</h3>
+        <ul>
+          <li><strong>behavioral_sum</strong> — sum of preventive behaviors (hand washing, mask, social distancing).</li>
+          <li><strong>opinion_sum</strong> — composite of perceived risk and vaccine effectiveness.</li>
+          <li><strong>health_score</strong> — based on chronic conditions and recent doctor visits.</li>
+          <li><strong>risk_gap</strong> — difference between perceived risk of H1N1 vs seasonal flu.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="model-building" class="section-card">
+    <h2>Model Building & Evaluation</h2>
+    <div class="section-sub">Algorithms, hyperparameter tuning, and performance metrics</div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Models Tested</h3>
+        <ul><li>Logistic Regression (baseline)</li><li>XGBoost</li><li>LightGBM</li><li>CatBoost</li><li>TabNet (deep learning)</li></ul>
+      </div>
+      <div class="card">
+        <h3>Hyperparameter Tuning</h3>
+        <p>RandomizedSearchCV for XGBoost/LightGBM; Optuna for CatBoost. Early stopping to prevent overfitting.</p>
+        <div class="graph-inference"><strong>Final AUC Scores:</strong><br/>H1N1: TabNet 0.827, XGBoost 0.821<br/>Seasonal: XGBoost 0.866, LightGBM 0.862</div>
+      </div>
+    </div>
+    <!-- ROC Curves -->
+    <div class="graph-row">
+      <div class="graph-col">
+        <div class="graph-image">
+          <img src="roc_h1n1.jpg" alt="ROC curve for H1N1 vaccine prediction">
+          <div class="graph-caption">Figure 8: ROC Curve — H1N1 Vaccine</div>
+        </div>
+      </div>
+      <div class="graph-col">
+        <div class="graph-image">
+          <img src="roc_seasonal.jpg" alt="ROC curve for seasonal flu vaccine prediction">
+          <div class="graph-caption">Figure 9: ROC Curve — Seasonal Vaccine</div>
+        </div>
+      </div>
+    </div>
+    <!-- Confusion Matrix -->
+    <div class="graph-image">
+      <img src="confusion_matrix.jpg" alt="Confusion matrix for best model">
+      <div class="graph-caption">Figure 10: Confusion Matrix — XGBoost on Seasonal Vaccine</div>
+    </div>
+    <div class="graph-inference"><strong>Inference:</strong> Models perform better on seasonal vaccine prediction due to higher baseline rate and clearer patterns. Doctor recommendation remains the most important feature across both tasks.</div>
+  </section>
+
+  <section id="reflections" class="section-card">
+    <h2>Conclusion & Business Impact</h2>
+    <div class="section-sub">Key findings, limitations, and real-world applications</div>
+    <div class="grid-2">
+      <div class="card"><h3>Key Takeaways</h3><ul><li>Doctor recommendation is the single strongest predictor of vaccine uptake.</li><li>Seasonal vaccination behavior is easier to model than H1N1-specific behavior.</li><li>Feature engineering (behavioral and opinion composites) improves model robustness.</li><li>Ensemble methods (XGBoost, LightGBM) provide best balance of accuracy and speed.</li></ul></div>
+      <div class="card"><h3>Business Impact & SDG 3</h3><p>Predictive models enable targeted public health messaging, resource allocation, and outreach campaigns to increase vaccination rates in under-vaccinated groups. Supports SDG 3 (Good Health and Well-Being) by improving pandemic preparedness and reducing infectious disease spread.</p></div>
+    </div>
+    <div class="graph-inference"><strong>Limitations:</strong> Self-reported survey data may have recall bias. Models reflect 2009 population behavior; cross-validation across time or regions needed for generalizability.</div>
+  </section>
+
+  <section id="learning-reflections" class="section-card">
+    <h2>Learning Reflections</h2>
+    <div class="section-sub">Challenges, technical growth, and teamwork</div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Challenges Overcome</h3>
+        <ul><li>Handling 30+ columns with varying missingness — systematic imputation strategy.</li><li>Class imbalance — using ROC-AUC as primary metric instead of accuracy.</li><li>Large number of categorical features — ordinal encoding and domain-driven grouping.</li><li>Computational cost of TabNet — reduced feature set for prototyping.</li></ul>
+      </div>
+      <div class="card">
+        <h3>Skills Acquired</h3>
+        <ul><li>End-to-end ML pipeline design (cleaning → EDA → engineering → modeling).</li><li>Interpretability — SHAP analysis and feature importance.</li><li>Collaboration via Git/GitHub and DrivenData platform.</li><li>Hyperparameter optimization using Optuna and RandomizedSearch.</li></ul>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container footer-grid">
+    <div><strong>Project</strong><br/>Flu Shot Learning<br/>H1N1 & Seasonal Vaccine<br/>Prediction</div>
+    <div><strong>Student</strong><br/>Aditi Ullegaddi<br/>01FE24BCS076</div>
+    <div><strong>Course</strong><br/>Machine Learning (25ECSC212)<br/>Semester IV · Brain Bytes</div>
+    <div><strong>References</strong><br/>DrivenData Competition<br/>NHFS 2009 Dataset<br/>Scikit-learn, XGBoost, TabNet</div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('navToggle').addEventListener('click', function() {
+    document.getElementById('navLinks').classList.toggle('show');
+  });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute('id');
+        if (id) {
+          document.querySelectorAll('.nav-link, .drop-btn').forEach(link => link.classList.remove('active'));
+          document.querySelectorAll(`.nav-link[href="#${id}"]`).forEach(link => link.classList.add('active'));
+        }
+      }
+    });
+  }, { threshold: 0.4 });
+  document.querySelectorAll('section[id]').forEach(section => observer.observe(section));
+</script>
+
+</body>
+</html>
