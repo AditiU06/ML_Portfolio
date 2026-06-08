@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>ML Portfolio | Flu Shot Learning · Vaccine Prediction</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Cambria', 'Cochin', Georgia, Times, 'Times New Roman', serif;
+      background: #faf7f2;
+      color: #2d2a2a;
+      line-height: 1.55;
+      scroll-behavior: smooth;
+      font-size: 20px;
+    }
+
+    /* Purple-Yellow Theme */
+    :root {
+      --purple-deep: #2d1b4e;
+      --purple-primary: #6b3fa0;
+      --purple-soft: #f3eef9;
+      --purple-border: #d9c8ed;
+      --yellow-accent: #e6a017;
+      --yellow-soft: #fef7e6;
+      --yellow-deep: #c4850a;
+      --grey-bg: #ffffff;
+      --grey-card: #ffffff;
+      --grey-muted: #6b5e7e;
+      --grey-light: #f5f2f0;
+      --grey-shadow: 0 8px 20px rgba(0, 0, 0, 0.03), 0 2px 6px rgba(0, 0, 0, 0.05);
+      --radius-lg: 28px;
+      --radius-md: 20px;
+      --radius-sm: 14px;
+    }
+
+    .container {
+      width: min(1280px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    h1, h2, h3, h4 {
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      line-height: 1.25;
+      color: var(--purple-deep);
+    }
+
+    h1 { font-size: 2.2rem; }
+    h2 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+    .section-sub {
+      color: var(--grey-muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+      border-left: 3px solid var(--yellow-accent);
+      padding-left: 0.8rem;
+    }
+
+    /* Navigation */
+    .navbar {
+      background: #ffffff;
+      border-bottom: 1px solid var(--purple-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background-color: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(2px);
+    }
+
+    .nav-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      min-height: 70px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-text h3 { font-size: 1.1rem; line-height: 1.2; color: var(--purple-deep); }
+    .brand-text p { font-size: 0.75rem; color: var(--grey-muted); }
+
+    .nav-link, .drop-btn, .dropdown a,
+    .nav-link:link, .nav-link:visited, .nav-link:hover, .nav-link:active,
+    .dropdown a:link, .dropdown a:visited, .dropdown a:hover, .dropdown a:active {
+      text-decoration: none;
+    }
+
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: 1px solid var(--purple-border);
+      padding: 8px 14px;
+      border-radius: 40px;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--purple-primary);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .nav-link, .drop-btn {
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      border-radius: 40px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: #4a3a62;
+      transition: background 0.2s;
+      font-family: inherit;
+    }
+
+    .nav-link:hover, .drop-btn:hover {
+      background: var(--purple-soft);
+      color: var(--purple-deep);
+    }
+
+    .nav-item { position: relative; }
+    .dropdown {
+      position: absolute;
+      top: 38px;
+      left: 0;
+      background: #ffffff;
+      border: 1px solid var(--purple-border);
+      border-radius: 20px;
+      padding: 10px 0;
+      min-width: 240px;
+      box-shadow: var(--grey-shadow);
+      display: none;
+      z-index: 200;
+    }
+    .dropdown a {
+      display: block;
+      padding: 8px 18px;
+      font-size: 0.8rem;
+      color: #4a3a62;
+    }
+    .dropdown a:hover { background: var(--purple-soft); color: var(--purple-deep); }
+    .nav-item:hover .dropdown { display: block; }
+    .caret { font-size: 0.65rem; margin-left: 4px; opacity: 0.7; }
+
+    /* Hero */
+    .hero {
+      padding: 48px 0 40px;
+      background: linear-gradient(135deg, #fef7e6 0%, #f3eef9 100%);
+      border-bottom: 1px solid var(--purple-border);
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 0.9fr;
+      gap: 32px;
+      align-items: stretch;
+    }
+    .hero-card {
+      background: #ffffff;
+      border-radius: 32px;
+      box-shadow: var(--grey-shadow);
+      border: 1px solid var(--purple-border);
+      padding: 32px;
+    }
+    .hero-tag {
+      background: var(--yellow-soft);
+      color: var(--yellow-accent);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 40px;
+      display: inline-block;
+      margin-bottom: 18px;
+    }
+    .hero-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 28px;
+    }
+    .meta-block {
+      background: #faf7f2;
+      border-radius: 20px;
+      padding: 14px 18px;
+      border: 1px solid var(--purple-border);
+    }
+    .meta-label { font-size: 0.7rem; text-transform: uppercase; color: var(--grey-muted); }
+    .meta-value { font-weight: 700; font-size: 1rem; color: var(--purple-deep); margin-top: 6px; }
+    .side-panel {
+      background: #ffffff;
+      border-radius: 32px;
+      border: 1px solid var(--purple-border);
+      padding: 28px;
+    }
+    .panel-title { font-size: 1.35rem; margin-bottom: 16px; border-left: 4px solid var(--yellow-accent); padding-left: 14px; }
+    .info-list { display: flex; flex-direction: column; gap: 18px; }
+    .info-item {
+      background: #faf7f2;
+      border-radius: 20px;
+      padding: 16px;
+      border: 1px solid var(--purple-border);
+    }
+    .info-item strong { display: block; color: var(--purple-primary); margin-bottom: 6px; }
+
+    /* section cards */
+    .section-card {
+      background: #ffffff;
+      border-radius: 32px;
+      border: 1px solid var(--purple-border);
+      margin-top: 32px;
+      margin-bottom: 32px;
+      padding: 32px;
+      box-shadow: var(--grey-shadow);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .section-card:hover {
+      box-shadow: 0 12px 30px rgba(107, 63, 160, 0.1);
+    }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .card {
+      background: #ffffff;
+      border: 1px solid var(--purple-border);
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+      transition: border-color 0.2s;
+    }
+    .card:hover {
+      border-color: var(--yellow-accent);
+    }
+    .card h3 { font-size: 1.25rem; margin-bottom: 14px; border-bottom: 2px solid var(--yellow-soft); display: inline-block; padding-bottom: 4px; color: var(--purple-deep); }
+    .table-wrapper { overflow-x: auto; border-radius: 20px; border: 1px solid var(--purple-border); background: white; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th { background: var(--purple-soft); padding: 12px; text-align: left; font-weight: 600; color: var(--purple-deep); border-bottom: 1px solid var(--purple-border); }
+    td { padding: 10px 12px; border-bottom: 1px solid var(--purple-border); color: #2d2a2a; }
+    .tag { background: var(--purple-soft); color: var(--purple-primary); border-radius: 40px; padding: 4px 12px; font-size: 0.7rem; font-weight: 600; display: inline-block; margin: 2px; }
+    .timeline-simple { display: flex; flex-direction: column; gap: 12px; margin-top: 14px; border-left: 2px solid var(--purple-border); padding-left: 16px; }
+
+    /* Code snippet styling */
+    .code-snippet {
+      background: #1e1a2f;
+      color: #f3eef9;
+      border-radius: 20px;
+      padding: 16px 20px;
+      margin: 16px 0;
+      overflow-x: auto;
+      font-family: 'Fira Code', 'Courier New', monospace;
+      font-size: 0.75rem;
+      line-height: 1.45;
+      border-left: 4px solid var(--yellow-accent);
+    }
+    .code-snippet pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .code-caption {
+      font-size: 0.7rem;
+      color: var(--grey-muted);
+      margin-top: 8px;
+      text-align: left;
+      font-style: italic;
+    }
+
+    /* Image styling */
+    .graph-image {
+      width: 100%;
+      border-radius: 20px;
+      border: 1px solid var(--purple-border);
+      background: #faf7f2;
+      margin: 12px 0;
+    }
+    .graph-image img {
+      width: 100%;
+      height: auto;
+      border-radius: 20px;
+      display: block;
+    }
+    .graph-caption {
+      font-size: 0.7rem;
+      color: var(--grey-muted);
+      margin-top: 8px;
+      text-align: center;
+      font-style: italic;
+    }
+    .graph-inference {
+      background: var(--purple-soft);
+      border-left: 4px solid var(--yellow-accent);
+      padding: 12px 16px;
+      margin: 8px 0 16px 0;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      color: var(--purple-deep);
+    }
+    .graph-inference strong {
+      color: var(--purple-primary);
+    }
+    .graph-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin: 20px 0;
+    }
+    .graph-col {
+      flex: 1;
+      min-width: 250px;
+    }
+
+    /* about me */
+    .about-grid {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .about-image {
+      flex: 0 0 220px;
+      text-align: center;
+    }
+    .profile-image {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--yellow-accent);
+      box-shadow: var(--grey-shadow);
+      background: var(--purple-soft);
+    }
+    .about-text { flex: 1; }
+
+    /* rank image styling */
+    .rank-image-container {
+      display: flex;
+      justify-content: center;
+      margin: 24px 0 16px 0;
+    }
+    .rank-image {
+      max-width: 500px;
+      width: 100%;
+      border-radius: 20px;
+      border: 1px solid var(--purple-border);
+      box-shadow: var(--grey-shadow);
+      background: #ffffff;
+      padding: 8px;
+    }
+    .rank-image img {
+      width: 100%;
+      height: auto;
+      border-radius: 16px;
+      display: block;
+    }
+    .rank-caption {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--grey-muted);
+      margin-top: 8px;
+      font-style: italic;
+    }
+
+    footer {
+      background: var(--purple-deep);
+      color: #e2ddf0;
+      padding: 38px 0 32px;
+      margin-top: 48px;
+      border-top: 1px solid #4a3268;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+    .footer-grid strong { color: var(--yellow-accent); display: block; margin-bottom: 6px; }
+
+    @media (max-width: 860px) {
+      .hero-grid, .grid-2, .grid-3, .footer-grid, .about-grid { grid-template-columns: 1fr; }
+      .about-grid { flex-direction: column; text-align: center; }
+      .nav-toggle { display: inline-block; }
+      .nav-links { display: none; width: 100%; flex-direction: column; align-items: flex-start; padding: 16px 0; }
+      .nav-links.show { display: flex; }
+      .dropdown { position: static; display: none; width: 100%; background: transparent; border: none; padding-left: 20px; }
+      .nav-item.open .dropdown { display: block; }
+      .nav-item:hover .dropdown { display: none; }
+      .graph-row { flex-direction: column; }
+      .rank-image { max-width: 100%; }
+    }
+    .nav-link.active, .drop-btn.active { background: var(--purple-soft); font-weight: 600; color: var(--purple-deep); }
+    .dropdown a.active-sub { background: var(--purple-soft); color: var(--purple-deep); }
+  </style>
+</head>
+<body>
+
+<header class="navbar">
+  <div class="container nav-wrap">
+    <div class="brand">
+      <div class="brand-text"><h3>Machine Learning Portfolio</h3><p>Aditi Ullegaddi · 01FE24BCS076</p></div>
+    </div>
+    <button class="nav-toggle" id="navToggle">Menu</button>
+    <nav class="nav-links" id="navLinks">
+      <a class="nav-link" href="#home">Home</a>
+      <a class="nav-link" href="#about">About Me</a>
+      <a class="nav-link" href="#introduction">Introduction</a>
+      <div class="nav-item">
+        <button class="drop-btn">Exploratory Data Analysis <span class="caret">▼</span></button>
+        <div class="dropdown">
+          <a href="#domain-dataset">Domain & Dataset</a>
+          <a href="#preprocessing">Preprocessing</a>
+          <a href="#analysis">Visualization & Analysis</a>
+          <a href="#feature-selection">Feature Importance & Engineering</a>
+        </div>
+      </div>
+      <div class="nav-item">
+        <button class="drop-btn">Machine Learning <span class="caret">▼</span></button>
+        <div class="dropdown"><a href="#model-building">Model Building & Evaluation</a></div>
+      </div>
+      <a class="nav-link" href="#reflections">Conclusion</a>
+      <a class="nav-link" href="#learning-reflections">Learning Reflections</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" id="home">
+  <div class="container hero-grid">
+    <div class="hero-card">
+      <div class="hero-tag">Machine Learning (25ECSC212) | Current Rank: 29</div>
+      <h1>Flu Shot Learning: Predict H1N1 and Seasonal Flu Vaccines</h1>
+      <p>This project analyzes survey data from the National 2009 H1N1 Flu Survey (NHFS) to understand what influences vaccination behavior and to build machine learning models that predict whether an individual received the H1N1 or seasonal flu vaccine. A better understanding of these characteristics can provide guidance for future public health efforts.</p>
+      <div class="hero-meta-grid">
+        <div class="meta-block"><div class="meta-label">Semester</div><div class="meta-value">Sem IV</div></div>
+        <div class="meta-block"><div class="meta-label">Team</div><div class="meta-value">Brain Bytes</div></div>
+        <div class="meta-block"><div class="meta-label">Dataset</div><div class="meta-value">NHFS 2009 Survey</div></div>
+        <div class="meta-block"><div class="meta-label">Final Score</div><div class="meta-value">0.8446</div></div>
+      </div>
+    </div>
+    <aside class="side-panel">
+      <div class="panel-title">Project Overview</div>
+      <div class="info-list">
+        <div class="info-item"><strong>Problem</strong><span>Predict vaccination uptake from demographic, behavioral, medical, and opinion-based survey responses (35 features, 26,707 training rows).</span></div>
+        <div class="info-item"><strong>Key Outcome</strong><span>Seasonal vaccination easier to predict; doctor recommendation emerged as strongest driver; TabNet (H1N1 AUC 0.827) & XGBoost (Seasonal AUC 0.866).</span></div>
+        <div class="info-item"><strong>SDG Alignment</strong><span>SDG 3: Good Health and Well-Being — supporting public health analytics and targeted vaccine outreach.</span></div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<main class="container">
+  <!-- About Me Section -->
+  <section id="about" class="section-card">
+    <h2>About Me</h2>
+    <div class="section-sub">Computer Science Student | KLE Technological University</div>
+    <div class="about-grid">
+      <div class="about-image">
+        <img src="profile.png" alt="Aditi Ullegaddi" class="profile-image" onerror="this.style.display='none'; this.parentElement.innerHTML+='<div style=\'width:200px;height:200px;background:#f3eef9;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:12px;color:#6b3fa0;\'>📷</div>'">
+      </div>
+      <div class="about-text">
+        <h3 style="margin-bottom: 6px;">Aditi Ullegaddi</h3>
+        <h3 style="margin-bottom: 6px; color: var(--purple-primary);">USN: 01FE24BCS076</h3>
+        <p>I am a Computer Science and Engineering student with a strong interest in Machine Learning and Data Science. I enjoy exploring new technologies, working on practical projects, and applying data-driven approaches to solve real-world problems. Through continuous learning and hands-on experience, I am constantly developing my technical and analytical skills.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DrivenData Rank Image Section -->
+  <div class="rank-image-container">
+    <div class="rank-image">
+      <img src="drivendata_rank.JPG" alt="DrivenData Competition Rank 29" onerror="this.parentElement.innerHTML='<div style=\'background:#f3eef9; border-radius:20px; padding:40px; text-align:center; color:#6b3fa0;\'>Rank 29 Image Placeholder<br>Update path: /drivendata_rank.JPG</div>'">
+      <div class="rank-caption">DrivenData Flu Shot Learning Competition - Rank 29</div>
+    </div>
+  </div>
+
+  <!-- Introduction section -->
+  <section id="introduction" class="section-card">
+    <h2>Introduction</h2>
+    <div class="section-sub">Pandemic response, vaccination drivers, and project scope</div>
+    <div class="grid-2">
+      <div class="card"><h3>Problem Statement</h3><p>To predict the likelihood of individuals receiving H1N1 and seasonal flu vaccines using demographic characteristics, behavioral patterns, and vaccine-related opinions. This model aims to identify key factors influencing vaccination decisions and generate probability-based predictions, enabling data-driven public health interventions.</p></div>
+      <div class="card"><h3>Objectives</h3><ul><li>Identify key features (behavioral, demographic, attitudinal) that drive vaccine uptake.</li><li>Predict probability that a respondent received H1N1 vaccine.</li><li>Predict probability for seasonal flu vaccine.</li><li>Evaluate model performance using ROC-AUC and develop production-ready pipeline.</li></ul></div>
+    </div>
+    <div class="grid-2" style="margin-top:20px">
+      <div class="card"><h3>Dataset Overview</h3><div class="table-wrapper"><table><tbody><tr><th>Source</th><td>National 2009 H1N1 Flu Survey (NHFS), US HHS</th></tr>
+    <tr><th>Training rows</th><td>26,707</th></tr>
+    <tr><th>Test rows</th><td>26,708</th></tr>
+    <tr><th>Total features</th><td>35</th></tr>
+    <tr><th>Target variables</th><td>h1n1_vaccine, seasonal_vaccine</th></tr>
+  </tbody>
+</table>
+</div></div>
+      <div class="card"><h3>Tools & Workflow</h3><p><span class="tag">Python</span> <span class="tag">Pandas</span> <span class="tag">NumPy</span> <span class="tag">Matplotlib</span> <span class="tag">Seaborn</span> <span class="tag">Scikit-learn</span> <span class="tag">XGBoost</span> <span class="tag">LightGBM</span> <span class="tag">CatBoost</span> <span class="tag">TabNet</span></p><div class="timeline-simple"><div><strong>Data Collection</strong> — NHFS survey</div><div><strong>Preprocessing</strong> — median imputation, ordinal encoding, scaling</div><div><strong>EDA</strong> — missing values, imbalance, correlations</div><div><strong>Feature Engineering</strong> — behavioral_sum, opinion_sum, health_score, risk_gap</div><div><strong>Modeling</strong> — Logistic Regression, XGBoost, LightGBM, CatBoost, TabNet</div></div></div>
+    </div>
+  </section>
+
+  <section id="domain-dataset" class="section-card">
+    <h2>Domain and Dataset Description</h2>
+    <div class="section-sub">H1N1 pandemic, vaccine types, and influencing factors</div>
+    <div class="grid-2">
+      <div class="card"><h3>Domain Background</h3><p>Beginning in spring 2009, H1N1 influenza (swine flu) swept across the world. A vaccine became publicly available in October 2009. This project uses the National 2009 H1N1 Flu Survey phone data, covering social, economic, demographic background, opinions on risks, vaccine effectiveness, and mitigating behaviors.</p></div>
+      <div class="card"><h3>Key Factors Influencing Uptake</h3><ul><li>Doctor's recommendation (strongest predictor)</li><li>Perceived vaccine effectiveness and risk of illness</li><li>Behavioral habits (hand washing, mask usage)</li><li>Age group, health worker status, insurance</li></ul><p>Evaluation metric: ROC-AUC.</p></div>
+    </div><br/>
+    <div class="card"><h3>Missing Values Insight</h3><p>30 columns contained missing values. Employment-related features had the highest missing entries; behavioral features fewer missing values.</p></div>
+    <!-- Missing values image -->
+    <div class="graph-image">
+      <img src="missing_values.JPG" alt="Missing values analysis">
+      <div class="graph-caption">Figure 1: Missing values pattern across features</div>
+    </div>
+    <!-- H1N1 distribution -->
+    <div class="graph-image">
+      <img src="h1n1_distribution.JPG" alt="H1N1 vaccine distribution">
+      <div class="graph-caption">Figure 2: Distribution of H1N1 vaccine uptake</div>
+    </div>
+    <!-- Seasonal distribution -->
+    <div class="graph-image">
+      <img src="seasonal_distribution.JPG" alt="Seasonal flu vaccine distribution">
+      <div class="graph-caption">Figure 3: Distribution of seasonal flu vaccine uptake</div>
+    </div>
+    <div class="graph-inference"><strong>Inference:</strong> Target variables are moderately imbalanced; seasonal vaccine has higher uptake. Public health interventions require targeted campaigns to close gaps.</div>
+  </section>
+
+  <!-- Preprocessing section -->
+  <section id="preprocessing" class="section-card">
+    <h2>Preprocessing Steps</h2>
+    <div class="section-sub">Data cleaning, encoding, and handling missingness</div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Missing Value Imputation</h3>
+        <p>Median imputation for numeric columns (health-related behavioral scores). Mode imputation for categorical columns (employment, income bracket).</p>
+      </div>
+      <div class="card">
+        <h3>Encoding & Scaling</h3>
+        <p>Ordinal encoding for ordinal features (e.g., opinion ratings). StandardScaler for numeric features before model training.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Visualization and Analysis Section -->
+  <section id="analysis" class="section-card">
+    <h2>Visualization & Analysis</h2>
+    <div class="section-sub">Relationships, distributions, and feature correlations</div>
+    <!-- gender vaccination plot -->
+    <div class="graph-image">
+      <img src="gender_vaccination.JPG" alt="Gender wise vaccination rates">
+      <div class="graph-caption">Figure 4: Vaccination rate by gender</div>
+    </div>
+    <div class="graph-inference"><strong>Inference:</strong> Minimal gender difference in overall vaccine uptake. Both genders show higher uptake for seasonal vaccine.</div>
+    <!-- age group plot -->
+    <div class="graph-image">
+      <img src="age_group.JPG" alt="Age group vaccine distribution">
+      <div class="graph-caption">Figure 5: Vaccine uptake across age groups</div>
+    </div>
+    <div class="graph-inference"><strong>Inference:</strong> Highest vaccination in older adults (65+). Younger adults (18-34) have lowest uptake — potential target for public health campaigns.</div>
+    <!-- correlation heatmap -->
+    <div class="graph-image">
+      <img src="correlation_heatmap.JPG" alt="Feature correlation heatmap">
+      <div class="graph-caption">Figure 6: Correlation heatmap of features and targets</div>
+    </div>
+    <div class="graph-inference"><strong>Inference:</strong> Strong positive correlation between h1n1_vaccine and seasonal_vaccine (0.42). Doctor recommendation most strongly correlates with both vaccine targets.</div>
+  </section>
+
+  <section id="feature-selection" class="section-card">
+    <h2>Feature Importance & Engineering</h2>
+    <div class="section-sub">Identified key drivers and created composite features</div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Feature Importance</h3>
+        <div class="graph-image">
+          <img src="feature_importance.JPG" alt="Feature importance ranking">
+          <div class="graph-caption">Figure 7: Top features by importance (XGBoost)</div>
+        </div>
+        <p>Top predictors: doctor_recommendation, age_group, health_insurance, opinion_vacc_effective, and behavioral habits.</p>
+      </div>
+      <div class="card">
+        <h3>Feature Engineering</h3>
+        <ul>
+          <li><strong>behavioral_sum</strong> — sum of preventive behaviors (hand washing, mask, social distancing).</li>
+          <li><strong>opinion_sum</strong> — composite of perceived risk and vaccine effectiveness.</li>
+          <li><strong>health_score</strong> — based on chronic conditions and recent doctor visits.</li>
+          <li><strong>risk_gap</strong> — difference between perceived risk of H1N1 vs seasonal flu.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="model-building" class="section-card">
+    <h2>Model Building & Evaluation</h2>
+    <div class="section-sub">Algorithms, hyperparameter tuning, and performance metrics</div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Models Tested</h3>
+        <ul><li>Logistic Regression (baseline)</li><li>XGBoost</li><li>LightGBM</li><li>CatBoost</li><li>TabNet (deep learning)</li></ul>
+      </div>
+      <div class="card">
+        <h3>Hyperparameter Tuning</h3>
+        <p>RandomizedSearchCV for XGBoost/LightGBM; Optuna for CatBoost. Early stopping to prevent overfitting.</p>
+        <div class="graph-inference"><strong>Final AUC Scores:</strong><br/>H1N1: TabNet 0.827, XGBoost 0.821<br/>Seasonal: XGBoost 0.866, LightGBM 0.862</div>
+      </div>
+    </div>
+    <!-- ROC Curves -->
+    <div class="graph-row">
+      <div class="graph-col">
+        <div class="graph-image">
+          <img src="roc_h1n1.JPG" alt="ROC curve for H1N1 vaccine prediction">
+          <div class="graph-caption">Figure 8: ROC Curve — H1N1 Vaccine</div>
+        </div>
+      </div>
+      <div class="graph-col">
+        <div class="graph-image">
+          <img src="roc_seasonal.JPG" alt="ROC curve for seasonal flu vaccine prediction">
+          <div class="graph-caption">Figure 9: ROC Curve — Seasonal Vaccine</div>
+        </div>
+      </div>
+    </div>
+    <!-- Confusion Matrix -->
+    <div class="graph-image">
+      <img src="confusion_matrix.JPG" alt="Confusion matrix for best model">
+      <div class="graph-caption">Figure 10: Confusion Matrix — XGBoost on Seasonal Vaccine</div>
+    </div>
+    <div class="graph-inference"><strong>Inference:</strong> Models perform better on seasonal vaccine prediction due to higher baseline rate and clearer patterns. Doctor recommendation remains the most important feature across both tasks.</div>
+  </section>
+
+  <section id="reflections" class="section-card">
+    <h2>Conclusion & Business Impact</h2>
+    <div class="section-sub">Key findings, limitations, and real-world applications</div>
+    <div class="grid-2">
+      <div class="card"><h3>Key Takeaways</h3><ul><li>Doctor recommendation is the single strongest predictor of vaccine uptake.</li><li>Seasonal vaccination behavior is easier to model than H1N1-specific behavior.</li><li>Feature engineering (behavioral and opinion composites) improves model robustness.</li><li>Ensemble methods (XGBoost, LightGBM) provide best balance of accuracy and speed.</li></ul></div>
+      <div class="card"><h3>Business Impact & SDG 3</h3><p>Predictive models enable targeted public health messaging, resource allocation, and outreach campaigns to increase vaccination rates in under-vaccinated groups. Supports SDG 3 (Good Health and Well-Being) by improving pandemic preparedness and reducing infectious disease spread.</p></div>
+    </div>
+    <div class="graph-inference"><strong>Limitations:</strong> Self-reported survey data may have recall bias. Models reflect 2009 population behavior; cross-validation across time or regions needed for generalizability.</div>
+  </section>
+
+  <section id="learning-reflections" class="section-card">
+    <h2>Learning Reflections</h2>
+    <div class="section-sub">Challenges, technical growth, and teamwork</div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Challenges Overcome</h3>
+        <ul><li>Handling 30+ columns with varying missingness — systematic imputation strategy.</li><li>Class imbalance — using ROC-AUC as primary metric instead of accuracy.</li><li>Large number of categorical features — ordinal encoding and domain-driven grouping.</li><li>Computational cost of TabNet — reduced feature set for prototyping.</li></ul>
+      </div>
+      <div class="card">
+        <h3>Skills Acquired</h3>
+        <ul><li>End-to-end ML pipeline design (cleaning → EDA → engineering → modeling).</li><li>Interpretability — SHAP analysis and feature importance.</li><li>Collaboration via Git/GitHub and DrivenData platform.</li><li>Hyperparameter optimization using Optuna and RandomizedSearch.</li></ul>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container footer-grid">
+    <div><strong>Project</strong><br/>Flu Shot Learning<br/>H1N1 & Seasonal Vaccine<br/>Prediction</div>
+    <div><strong>Student</strong><br/>Aditi Ullegaddi<br/>01FE24BCS076</div>
+    <div><strong>Course</strong><br/>Machine Learning (25ECSC212)<br/>Semester IV · Brain Bytes</div>
+    <div><strong>References</strong><br/>DrivenData Competition<br/>NHFS 2009 Dataset<br/>Scikit-learn, XGBoost, TabNet</div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('navToggle').addEventListener('click', function() {
+    document.getElementById('navLinks').classList.toggle('show');
+  });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute('id');
+        if (id) {
+          document.querySelectorAll('.nav-link, .drop-btn').forEach(link => link.classList.remove('active'));
+          document.querySelectorAll(`.nav-link[href="#${id}"]`).forEach(link => link.classList.add('active'));
+        }
+      }
+    });
+  }, { threshold: 0.4 });
+  document.querySelectorAll('section[id]').forEach(section => observer.observe(section));
+</script>
+
+</body>
+</html>
